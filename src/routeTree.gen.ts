@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RulesRouteImport } from './routes/rules'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
@@ -43,6 +44,11 @@ const RulesRoute = RulesRouteImport.update({
   path: '/rules',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/rules': typeof RulesRoute
+  '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/new': typeof AuthenticatedNewRoute
   '/c/$slug': typeof CSlugRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/rules': typeof RulesRoute
+  '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/new': typeof AuthenticatedNewRoute
   '/c/$slug': typeof CSlugRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/rules': typeof RulesRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/c/$slug': typeof CSlugRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/rules'
+    | '/terms'
     | '/admin'
     | '/new'
     | '/c/$slug'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/rules'
+    | '/terms'
     | '/admin'
     | '/new'
     | '/c/$slug'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/rules'
+    | '/terms'
     | '/_authenticated/admin'
     | '/_authenticated/new'
     | '/c/$slug'
@@ -136,6 +148,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PrivacyRoute: typeof PrivacyRoute
   RulesRoute: typeof RulesRoute
+  TermsRoute: typeof TermsRoute
   CSlugRoute: typeof CSlugRoute
   PostPostIdRoute: typeof PostPostIdRoute
 }
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/rules'
       fullPath: '/rules'
       preLoaderRoute: typeof RulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -227,6 +247,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PrivacyRoute: PrivacyRoute,
   RulesRoute: RulesRoute,
+  TermsRoute: TermsRoute,
   CSlugRoute: CSlugRoute,
   PostPostIdRoute: PostPostIdRoute,
 }
