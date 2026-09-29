@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 
@@ -19,10 +21,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const CSlugRoute = CSlugRouteImport.update({
   id: '/c/$slug',
@@ -38,32 +49,44 @@ const PostPostIdRoute = PostPostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/new': typeof AuthenticatedNewRoute
   '/c/$slug': typeof CSlugRoute
   '/post/$postId': typeof PostPostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/new': typeof AuthenticatedNewRoute
   '/c/$slug': typeof CSlugRoute
   '/post/$postId': typeof PostPostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/new': typeof AuthenticatedNewRoute
   '/c/$slug': typeof CSlugRoute
   '/post/$postId': typeof PostPostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/c/$slug' | '/post/$postId'
+  fullPaths: '/' | '/auth' | '/new' | '/c/$slug' | '/post/$postId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/c/$slug' | '/post/$postId'
-  id: '__root__' | '/' | '/auth' | '/c/$slug' | '/post/$postId'
+  to: '/' | '/auth' | '/new' | '/c/$slug' | '/post/$postId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/new'
+    | '/c/$slug'
+    | '/post/$postId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CSlugRoute: typeof CSlugRoute
   PostPostIdRoute: typeof PostPostIdRoute
@@ -78,12 +101,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/new': {
+      id: '/_authenticated/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof AuthenticatedNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/c/$slug': {
       id: '/c/$slug'
@@ -102,8 +139,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedNewRoute: typeof AuthenticatedNewRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedNewRoute: AuthenticatedNewRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CSlugRoute: CSlugRoute,
   PostPostIdRoute: PostPostIdRoute,
