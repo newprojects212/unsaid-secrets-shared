@@ -86,13 +86,19 @@ function AdminPage() {
 
   async function lookupEmail(report: ReportRow) {
     const authorId = await authorOf(report);
-    if (!authorId) return toast("Content not found.");
+    if (!authorId) {
+      toast("Content not found.");
+      return;
+    }
     const { data } = await supabase
       .from("profiles")
       .select("email")
       .eq("id", authorId)
       .maybeSingle();
-    if (!data) return toast("No profile found.");
+    if (!data) {
+      toast("No profile found.");
+      return;
+    }
     setEmails((prev) => ({ ...prev, [report.id]: data.email }));
     await logAction("lookup_email", report.target_type, report.target_id, "Viewed account email");
   }
@@ -103,7 +109,10 @@ function AdminPage() {
       .from(table)
       .update({ is_deleted: true })
       .eq("id", report.target_id);
-    if (error) return toast("Couldn't remove that.");
+    if (error) {
+      toast("Couldn't remove that.");
+      return;
+    }
     await logAction("delete_content", report.target_type, report.target_id);
     await resolve(report, "resolved");
     toast("Content removed.");
@@ -111,12 +120,18 @@ function AdminPage() {
 
   async function banAuthor(report: ReportRow) {
     const authorId = await authorOf(report);
-    if (!authorId) return toast("Content not found.");
+    if (!authorId) {
+      toast("Content not found.");
+      return;
+    }
     const { error } = await supabase
       .from("profiles")
       .update({ is_banned: true })
       .eq("id", authorId);
-    if (error) return toast("Couldn't ban that user.");
+    if (error) {
+      toast("Couldn't ban that user.");
+      return;
+    }
     await logAction("ban_user", "profile", authorId);
     toast("User banned.");
   }
