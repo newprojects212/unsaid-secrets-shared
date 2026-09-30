@@ -354,6 +354,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_conversations: { Args: never; Returns: Json }
+      admin_moderate: {
+        Args: { _action: string; _id: string; _kind: string }
+        Returns: undefined
+      }
+      admin_open_conversation: { Args: { _id: string }; Returns: Json }
+      admin_open_user: { Args: { _id: string }; Returns: Json }
       block_conversation: { Args: { _id: string }; Returns: undefined }
       generate_pseudonym: { Args: never; Returns: string }
       has_role: {
@@ -366,6 +373,11 @@ export type Database = {
       is_banned: { Args: { _user_id: string }; Returns: boolean }
       is_chat_member: { Args: { _id: string; _user: string }; Returns: boolean }
       list_my_conversations: { Args: never; Returns: Json }
+      my_space: { Args: never; Returns: Json }
+      owner_post_action: {
+        Args: { _action: string; _id: string; _progress?: string }
+        Returns: undefined
+      }
       read_conversation: { Args: { _id: string }; Returns: Json }
       request_message: {
         Args: { _body: string; _target_id: string; _target_type: string }

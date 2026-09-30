@@ -15,6 +15,13 @@
       "when": 1790746556430,
       "tag": "0001_private_messages_and_moderation",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790746578037,
+      "tag": "0002_my_space_and_admin_controls",
+      "breakpoints": true
     }
   ]
 }
