@@ -13,3 +13,5 @@
 - Anonymity: public reads never touch `profiles`; posts/comments store a denormalized `pseudonym` filled by a DB trigger, so emails can stay admin-only behind RLS.
 - Roles live in `user_roles` and are checked via the `has_role` security-definer function, never on `profiles`.
 - Communities are a static list in `src/lib/communities.ts` (no table) since the set is fixed.
+- Private messaging and profile details use validated security-definer database RPCs returning pseudonym-only DTOs; this keeps participant identifiers out of normal client responses.
+- Separate author deletion from admin removal and enforce immutable moderation flags in database triggers; owner updates cannot undo moderation.
