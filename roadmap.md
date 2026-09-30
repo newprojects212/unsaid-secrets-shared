@@ -1,0 +1,5 @@
+- [ ] Redesign public surfaces, navigation, motion and loading states.
+- [ ] Add private My Space with safe owner actions and stats.
+- [ ] Add secure message requests, chats, blocks, moderation, and live updates.
+- [ ] Expand admin users/conversations/context/audit controls.
+- [ ] Update safety notices and verify desktop/mobile flows.
