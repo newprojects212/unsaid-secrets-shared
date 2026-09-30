@@ -44,8 +44,27 @@ export type Database = {
         }
         Relationships: []
       }
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
+          admin_removed: boolean
           author_id: string
           body: string
           created_at: string
@@ -55,6 +74,7 @@ export type Database = {
           pseudonym: string
         }
         Insert: {
+          admin_removed?: boolean
           author_id: string
           body: string
           created_at?: string
@@ -64,6 +84,7 @@ export type Database = {
           pseudonym: string
         }
         Update: {
+          admin_removed?: boolean
           author_id?: string
           body?: string
           created_at?: string
@@ -82,8 +103,101 @@ export type Database = {
           },
         ]
       }
+      conversation_reads: {
+        Row: {
+          conversation_id: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          last_read_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_reads_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          recipient_id: string
+          sender_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipient_id: string
+          sender_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipient_id?: string
+          sender_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          admin_removed: boolean
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_request: boolean
+          sender_id: string
+        }
+        Insert: {
+          admin_removed?: boolean
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_request?: boolean
+          sender_id: string
+        }
+        Update: {
+          admin_removed?: boolean
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_request?: boolean
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
+          admin_removed: boolean
+          author_deleted: boolean
           author_id: string
           body: string
           community: string
@@ -97,6 +211,8 @@ export type Database = {
           title: string
         }
         Insert: {
+          admin_removed?: boolean
+          author_deleted?: boolean
           author_id: string
           body: string
           community: string
@@ -110,6 +226,8 @@ export type Database = {
           title: string
         }
         Update: {
+          admin_removed?: boolean
+          author_deleted?: boolean
           author_id?: string
           body?: string
           community?: string
@@ -236,6 +354,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      block_conversation: { Args: { _id: string }; Returns: undefined }
       generate_pseudonym: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -245,6 +364,21 @@ export type Database = {
         Returns: boolean
       }
       is_banned: { Args: { _user_id: string }; Returns: boolean }
+      is_chat_member: { Args: { _id: string; _user: string }; Returns: boolean }
+      list_my_conversations: { Args: never; Returns: Json }
+      read_conversation: { Args: { _id: string }; Returns: Json }
+      request_message: {
+        Args: { _body: string; _target_id: string; _target_type: string }
+        Returns: string
+      }
+      respond_to_request: {
+        Args: { _id: string; _status: string }
+        Returns: undefined
+      }
+      send_chat_message: {
+        Args: { _body: string; _id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
