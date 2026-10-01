@@ -5,6 +5,8 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { PostCard, type PostRow } from "@/components/PostCard";
 import { COMMUNITIES } from "@/lib/communities";
 import { Button } from "@/components/ui/button";
+import { lazy, Suspense, useEffect, useState } from "react";
+const LanternScene=lazy(()=>import('@/components/LanternScene'));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,6 +28,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [motion,setMotion]=useState(false);
+  useEffect(()=>{setMotion(!window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 767px)').matches && (navigator.hardwareConcurrency??4)>2)},[]);
   const { data: posts } = useQuery({
     queryKey: ["posts", "recent"],
     queryFn: async () => {
@@ -41,9 +45,11 @@ function Index() {
 
   return (
     <SiteLayout>
-      <section className="animate-rise py-6">
-        <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Say it. Set it down.</h1>
-        <h1 className="font-serif text-4xl leading-tight text-primary sm:text-5xl">Move on.</h1>
+      <section className="relative -mx-5 flex min-h-[390px] items-center overflow-hidden border-b border-border/50 px-5 py-12 sm:min-h-[480px]">
+        {motion&&<div className="pointer-events-none absolute inset-0"><Suspense fallback={null}><LanternScene/></Suspense></div>}
+        <div className="relative z-10 animate-rise max-w-xl">
+        <p className="mb-4 text-xs uppercase tracking-widest text-primary">A quiet room for what remains</p>
+        <h1 className="font-serif text-5xl leading-tight sm:text-7xl">Unsaid<span className="block mt-2 text-2xl text-primary sm:text-3xl">Say it. Set it down. Move on.</span></h1>
         <p className="mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground">
           Unsaid is a quiet room, not a feed. No followers, no downvotes, no names. Share what
           you've been carrying, hear that you're not alone, and let it go when you're ready.
@@ -56,9 +62,10 @@ function Index() {
             <Button variant="ghost">Read the rules</Button>
           </Link>
         </div>
+        </div>
       </section>
 
-      <section className="mt-14">
+      <section id="rooms" className="mt-12 scroll-mt-24">
         <h2 className="text-sm tracking-wide text-muted-foreground uppercase">Rooms</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {COMMUNITIES.map((c) => (
@@ -66,7 +73,7 @@ function Index() {
               key={c.slug}
               to="/c/$slug"
               params={{ slug: c.slug }}
-              className="quiet-card animate-rise p-4 transition-colors hover:border-primary/40"
+               className="quiet-card tilt-card animate-rise p-5 transition-colors hover:border-primary/40"
             >
               <div className="font-serif text-base">{c.name}</div>
               <p className="mt-1 text-xs text-muted-foreground">{c.blurb}</p>
@@ -77,7 +84,7 @@ function Index() {
 
       <section className="mt-14">
         <h2 className="text-sm tracking-wide text-muted-foreground uppercase">Recently shared</h2>
-        <div className="mt-4 space-y-3">
+         <div className="stagger-feed mt-4 space-y-3">
           {posts?.length ? (
             posts.map((p) => <PostCard key={p.id} post={p} />)
           ) : (

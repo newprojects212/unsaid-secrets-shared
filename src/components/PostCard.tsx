@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { communityName, PROGRESS, type ProgressKey } from "@/lib/communities";
 import { cn } from "@/lib/utils";
+import type { MouseEvent } from "react";
 
 export type PostRow = {
   id: string;
@@ -32,12 +33,15 @@ export function ProgressTag({ value }: { value: string }) {
 
 export function PostCard({ post }: { post: PostRow }) {
   const isLetter = post.post_type === "letter";
+  function tilt(e:MouseEvent<HTMLAnchorElement>){if(window.matchMedia('(hover: none), (prefers-reduced-motion: reduce)').matches)return;const r=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--mx',`${(e.clientX-r.left)/r.width*100}%`);e.currentTarget.style.setProperty('--my',`${(e.clientY-r.top)/r.height*100}%`);e.currentTarget.style.transform=`perspective(900px) rotateX(${((e.clientY-r.top)/r.height-.5)*-3}deg) rotateY(${((e.clientX-r.left)/r.width-.5)*3}deg)`}
   return (
     <Link
       to="/post/$postId"
       params={{ postId: post.id }}
+      onMouseMove={tilt}
+      onMouseLeave={e=>{e.currentTarget.style.transform=''}}
       className={cn(
-        "animate-rise block rounded-xl border p-5 transition-colors",
+        "tilt-card animate-rise block rounded-lg border p-5 transition-colors",
         isLetter
           ? "border-primary/25 bg-letter text-letter-foreground"
           : "quiet-card hover:border-primary/40",

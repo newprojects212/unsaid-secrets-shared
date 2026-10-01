@@ -17,7 +17,9 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as RulesRouteImport } from './routes/rules'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 
@@ -60,9 +62,19 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
   id: '/new',
   path: '/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const CSlugRoute = CSlugRouteImport.update({
@@ -84,7 +96,9 @@ export interface FileRoutesByFullPath {
   '/rules': typeof RulesRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/new': typeof AuthenticatedNewRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/c/$slug': typeof CSlugRoute
   '/post/$postId': typeof PostPostIdRoute
 }
@@ -96,7 +110,9 @@ export interface FileRoutesByTo {
   '/rules': typeof RulesRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/new': typeof AuthenticatedNewRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/c/$slug': typeof CSlugRoute
   '/post/$postId': typeof PostPostIdRoute
 }
@@ -110,7 +126,9 @@ export interface FileRoutesById {
   '/rules': typeof RulesRoute
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/c/$slug': typeof CSlugRoute
   '/post/$postId': typeof PostPostIdRoute
 }
@@ -124,7 +142,9 @@ export interface FileRouteTypes {
     | '/rules'
     | '/terms'
     | '/admin'
+    | '/messages'
     | '/new'
+    | '/profile'
     | '/c/$slug'
     | '/post/$postId'
   fileRoutesByTo: FileRoutesByTo
@@ -136,7 +156,9 @@ export interface FileRouteTypes {
     | '/rules'
     | '/terms'
     | '/admin'
+    | '/messages'
     | '/new'
+    | '/profile'
     | '/c/$slug'
     | '/post/$postId'
   id:
@@ -149,7 +171,9 @@ export interface FileRouteTypes {
     | '/rules'
     | '/terms'
     | '/_authenticated/admin'
+    | '/_authenticated/messages'
     | '/_authenticated/new'
+    | '/_authenticated/profile'
     | '/c/$slug'
     | '/post/$postId'
   fileRoutesById: FileRoutesById
@@ -224,11 +248,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/new': {
       id: '/_authenticated/new'
       path: '/new'
       fullPath: '/new'
       preLoaderRoute: typeof AuthenticatedNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/c/$slug': {
@@ -250,12 +288,16 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

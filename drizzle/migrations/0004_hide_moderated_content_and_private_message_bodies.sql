@@ -1,0 +1,5 @@
+REVOKE SELECT ON public.messages FROM authenticated;
+GRANT SELECT(id,conversation_id,is_request,admin_removed,created_at) ON public.messages TO authenticated;
+CREATE POLICY "never expose removed posts" ON public.posts AS RESTRICTIVE FOR SELECT TO anon,authenticated USING (NOT(author_deleted OR admin_removed));
+CREATE POLICY "never expose removed comments" ON public.comments AS RESTRICTIVE FOR SELECT TO anon,authenticated USING (NOT admin_removed);
+CREATE OR REPLACE FUNCTION public.admin_list_conversations() RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path=public AS $$ BEGIN IF NOT public.has_role(auth.uid(),'admin') THEN RAISE EXCEPTION 'Unauthorized'; END IF; RETURN (SELECT coalesce(jsonb_agg(jsonb_build_object('id',c.id,'status',c.status,'created_at',c.created_at,'sender',a.pseudonym,'sender_email',a.email,'recipient',b.pseudonym,'recipient_email',b.email) ORDER BY c.updated_at DESC),'[]'::jsonb) FROM public.conversations c LEFT JOIN public.profiles a ON a.id=c.sender_id LEFT JOIN public.profiles b ON b.id=c.recipient_id); END $$;

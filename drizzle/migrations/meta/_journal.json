@@ -22,6 +22,20 @@
       "when": 1790746578037,
       "tag": "0002_my_space_and_admin_controls",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790834842451,
+      "tag": "0003_private_space_and_moderation_controls",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790834944442,
+      "tag": "0004_hide_moderated_content_and_private_message_bodies",
+      "breakpoints": true
     }
   ]
 }
