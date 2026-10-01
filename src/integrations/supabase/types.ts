@@ -378,6 +378,7 @@ export type Database = {
         Args: { _action: string; _id: string; _progress?: string }
         Returns: undefined
       }
+      reaction_state: { Args: { _post: string }; Returns: Json }
       read_conversation: { Args: { _id: string }; Returns: Json }
       request_message: {
         Args: { _body: string; _target_id: string; _target_type: string }
@@ -389,6 +390,10 @@ export type Database = {
       }
       send_chat_message: {
         Args: { _body: string; _id: string }
+        Returns: undefined
+      }
+      toggle_reaction: {
+        Args: { _kind: string; _post: string }
         Returns: undefined
       }
     }
