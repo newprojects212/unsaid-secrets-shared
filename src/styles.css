@@ -41,6 +41,7 @@
   --color-surface-2: var(--surface-2);
   --color-letter: var(--letter);
   --color-letter-foreground: var(--letter-foreground);
+  --color-glow: var(--glow);
   --font-serif: "Fraunces", Georgia, serif;
   --font-sans: "Karla", system-ui, sans-serif;
   --shadow-quiet: 0 18px 40px -28px oklch(0 0 0 / 0.9);
@@ -93,6 +94,8 @@
   --ring: oklch(0.81 0.1 72);
   --letter: oklch(0.27 0.026 60);
   --letter-foreground: oklch(0.94 0.02 80);
+  --glow: oklch(0.67 0.065 180);
+  --mist: oklch(0.33 0.06 175 / 0.25);
 }
 
 .dark {
@@ -105,7 +108,8 @@
   }
 
   body {
-    background-color: var(--color-background);
+    background: radial-gradient(ellipse at 85% 10%, var(--mist), transparent 45%), radial-gradient(ellipse at 10% 70%, oklch(0.38 0.05 72 / .11), transparent 55%), var(--color-background);
+    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -116,13 +120,24 @@
   h3 {
     font-family: var(--font-serif);
     font-weight: 500;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
 }
 
 @utility quiet-card {
-  background-color: var(--color-surface);
+  background-color: color-mix(in oklab, var(--color-surface) 78%, transparent);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-quiet);
+  backdrop-filter: blur(18px);
 }
+
+.tilt-card { position: relative; isolation: isolate; transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease; }
+.tilt-card:hover { box-shadow: 0 20px 45px -24px color-mix(in oklab, var(--color-glow) 38%, transparent); }
+.tilt-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--color-glow) 12%, transparent), transparent 55%); z-index: -1; }
+.tilt-card:hover::before { opacity: 1; }
+.stagger-feed > * { animation-delay: calc(min(var(--i, 0), 12) * 65ms); }
+.stagger-feed > :nth-child(2) { --i: 1; }.stagger-feed > :nth-child(3) { --i: 2; }.stagger-feed > :nth-child(4) { --i: 3; }.stagger-feed > :nth-child(5) { --i: 4; }.stagger-feed > :nth-child(6) { --i: 5; }
+@keyframes release { 0% { opacity:1; filter:blur(0); transform: translateY(0) } 60% { opacity:.8; filter:blur(2px); transform:translateY(-8px) } 100% { opacity:.1; filter:blur(14px); transform:translateY(-24px) } }
+.release-embers { animation: release .9s ease forwards; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } .tilt-card { transform: none !important; } }
