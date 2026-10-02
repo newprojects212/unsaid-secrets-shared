@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { SiteLayout } from "@/components/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminUsers, AdminConversations } from "@/components/AdminPanels";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -15,6 +17,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { name: "description", content: "Moderation dashboard for Unsaid." },
       { property: "og:title", content: "Admin — Unsaid" },
       { property: "og:description", content: "Moderation dashboard for Unsaid." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AdminPage,
@@ -85,6 +89,7 @@ function AdminPage() {
   }
 
   async function lookupEmail(report: ReportRow) {
+    if(report.target_type==='conversation'){toast('Open this report in Conversations.');return}
     const authorId = await authorOf(report);
     if (!authorId) {
       toast("Content not found.");
@@ -104,11 +109,7 @@ function AdminPage() {
   }
 
   async function removeContent(report: ReportRow) {
-    const table = report.target_type === "post" ? "posts" : "comments";
-    const { error } = await supabase
-      .from(table)
-      .update({ is_deleted: true })
-      .eq("id", report.target_id);
+    const { error } = await supabase.rpc('admin_moderate',{_kind:report.target_type,_id:report.target_id,_action:report.target_type==='conversation'?'close':'remove'});
     if (error) {
       toast("Couldn't remove that.");
       return;
@@ -119,15 +120,13 @@ function AdminPage() {
   }
 
   async function banAuthor(report: ReportRow) {
+    if(report.target_type==='conversation'){toast('Review the participants in Conversations.');return}
     const authorId = await authorOf(report);
     if (!authorId) {
       toast("Content not found.");
       return;
     }
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_banned: true })
-      .eq("id", authorId);
+    const { error } = await supabase.rpc('admin_moderate',{_kind:'user',_id:authorId,_action:'ban'});
     if (error) {
       toast("Couldn't ban that user.");
       return;
@@ -164,6 +163,8 @@ function AdminPage() {
       <Tabs defaultValue="reports" className="mt-6">
         <TabsList>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="conversations">Conversations</TabsTrigger>
           <TabsTrigger value="log">Activity log</TabsTrigger>
         </TabsList>
 
@@ -179,19 +180,22 @@ function AdminPage() {
                   <span>{r.status}</span>
                 </div>
                 <p className="mt-2 text-sm">{r.reason}</p>
+                {r.target_type==='post'&&<Link className="mt-2 block text-xs text-primary underline" to="/post/$postId" params={{postId:r.target_id}}>View reported post</Link>}
+                {r.target_type==='comment'&&<p className="mt-2 text-xs text-muted-foreground">Comment ID: {r.target_id} · Review in Users</p>}
+                {r.target_type==='conversation'&&<p className="mt-2 text-xs text-muted-foreground">Conversation ID: {r.target_id} · Review in Conversations</p>}
                 {emails[r.id] && (
                   <p className="mt-2 text-xs text-primary">Account email: {emails[r.id]}</p>
                 )}
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Button size="sm" variant="secondary" onClick={() => lookupEmail(r)}>
+                   {r.target_type!=='conversation'&&<Button size="sm" variant="secondary" onClick={() => lookupEmail(r)}>
                     Look up email
-                  </Button>
+                   </Button>}
                   <Button size="sm" variant="secondary" onClick={() => removeContent(r)}>
-                    Delete content
+                     {r.target_type==='conversation'?'Close conversation':'Remove content'}
                   </Button>
-                  <Button size="sm" variant="destructive" onClick={() => banAuthor(r)}>
+                   {r.target_type!=='conversation'&&<Button size="sm" variant="destructive" onClick={() => banAuthor(r)}>
                     Ban author
-                  </Button>
+                   </Button>}
                   <Button size="sm" variant="ghost" onClick={() => resolve(r, "dismissed")}>
                     Dismiss
                   </Button>
@@ -202,6 +206,9 @@ function AdminPage() {
             <p className="text-sm text-muted-foreground">No reports.</p>
           )}
         </TabsContent>
+
+        <TabsContent value="users"><AdminUsers /></TabsContent>
+        <TabsContent value="conversations"><AdminConversations /></TabsContent>
 
         <TabsContent value="log" className="mt-5 space-y-2">
           {log?.length ? (

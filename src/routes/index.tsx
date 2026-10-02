@@ -18,6 +18,8 @@ export const Route = createFileRoute("/")({
           "A calm, anonymous place to share secrets, regrets and the past — and work on letting go.",
       },
       { property: "og:title", content: "Unsaid — Say it. Set it down. Move on." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
         content: "A quiet anonymous community for secrets, regrets and letting go.",
@@ -30,7 +32,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [motion,setMotion]=useState(false);
   useEffect(()=>{setMotion(!window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 767px)').matches && (navigator.hardwareConcurrency??4)>2)},[]);
-  const { data: posts } = useQuery({
+  const { data: posts, isLoading } = useQuery({
     queryKey: ["posts", "recent"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -67,7 +69,7 @@ function Index() {
 
       <section id="rooms" className="mt-12 scroll-mt-24">
         <h2 className="text-sm tracking-wide text-muted-foreground uppercase">Rooms</h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="stagger-feed mt-4 grid gap-3 sm:grid-cols-2">
           {COMMUNITIES.map((c) => (
             <Link
               key={c.slug}
@@ -85,7 +87,7 @@ function Index() {
       <section className="mt-14">
         <h2 className="text-sm tracking-wide text-muted-foreground uppercase">Recently shared</h2>
          <div className="stagger-feed mt-4 space-y-3">
-          {posts?.length ? (
+          {isLoading ? [0,1,2].map(i=><div key={i} className="h-36 animate-pulse rounded bg-surface" />) : posts?.length ? (
             posts.map((p) => <PostCard key={p.id} post={p} />)
           ) : (
             <p className="text-sm text-muted-foreground">

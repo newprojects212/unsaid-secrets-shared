@@ -46,6 +46,7 @@ function Terms() {
             are reviewed by the admin.
           </p>
         </section>
+        <section><h2 className="font-serif text-lg text-foreground">Private messages</h2><p className="mt-2">Messages are not end-to-end encrypted. The site admin can review conversations for safety and abuse handling. Do not send harassment, threats, or identifying information about other people.</p></section>
         <section>
           <h2 className="font-serif text-lg text-foreground">No warranty</h2>
           <p className="mt-2">

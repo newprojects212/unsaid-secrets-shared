@@ -48,6 +48,7 @@ function NewPost() {
   const [progress, setProgress] = useState<ProgressKey>("carrying");
   const [letGo, setLetGo] = useState<LetGo>("never");
   const [busy, setBusy] = useState(false);
+  const [releasing,setReleasing]=useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,6 +57,7 @@ function NewPost() {
       toast("Add a short title and a little more text.");
       return;
     }
+    if(letGo!=="never"||progress==='let_go'){setReleasing(true);await new Promise(r=>setTimeout(r,850))}
     setBusy(true);
     const expires_at =
       letGo === "never"
@@ -77,6 +79,7 @@ function NewPost() {
       .select("id")
       .maybeSingle();
     setBusy(false);
+    setReleasing(false);
 
     if (error || !data) {
       toast("Couldn't share that right now.");
@@ -93,22 +96,18 @@ function NewPost() {
         your email or name.
       </p>
 
-      <form onSubmit={submit} className="quiet-card animate-rise mt-8 space-y-6 p-6">
+      <form onSubmit={submit} className={cn("quiet-card animate-rise mt-8 space-y-6 p-6",releasing&&"release-embers")}>
         <div className="flex gap-2">
           {(["story", "letter"] as const).map((t) => (
-            <button
+            <Button
               key={t}
               type="button"
+              variant={postType===t?'secondary':'ghost'}
+              size="sm"
               onClick={() => setPostType(t)}
-              className={cn(
-                "rounded-full border px-3 py-1.5 text-xs transition-colors",
-                postType === t
-                  ? "border-primary/60 bg-primary/15 text-primary"
-                  : "border-border text-muted-foreground hover:text-foreground",
-              )}
             >
               {t === "story" ? "A thing I've never said" : "Letter to my past self"}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -148,19 +147,15 @@ function NewPost() {
           <Label>Where are you with this?</Label>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(PROGRESS) as ProgressKey[]).map((key) => (
-              <button
+              <Button
                 key={key}
                 type="button"
+                variant={progress===key?'secondary':'ghost'}
+                size="sm"
                 onClick={() => setProgress(key)}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs transition-colors",
-                  progress === key
-                    ? "border-primary/60 bg-primary/15 text-primary"
-                    : "border-border text-muted-foreground hover:text-foreground",
-                )}
               >
                 {PROGRESS[key]}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -175,19 +170,15 @@ function NewPost() {
                 ["7d", "Hide after 7 days"],
               ] as const
             ).map(([key, label]) => (
-              <button
+              <Button
                 key={key}
                 type="button"
+                variant={letGo===key?'secondary':'ghost'}
+                size="sm"
                 onClick={() => setLetGo(key)}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs transition-colors",
-                  letGo === key
-                    ? "border-primary/60 bg-primary/15 text-primary"
-                    : "border-border text-muted-foreground hover:text-foreground",
-                )}
               >
                 {label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
