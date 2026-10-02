@@ -11,7 +11,7 @@ function Lanterns() {
     if (!group.current) return;
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, pointer.x * .12, .025);
     group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, -pointer.y * .07, .025);
-    group.current.children.forEach((child,i) => {child.position.y = positions[i][1] + Math.sin(clock.elapsedTime * .36 + i * 1.7) * .13;});
+    group.current.children.forEach((child,i) => {const position=positions[i]; if(position) child.position.y = position[1] + Math.sin(clock.elapsedTime * .36 + i * 1.7) * .13;});
   });
   return <group ref={group}>{positions.map(([x,y,z,size],i)=><mesh key={i} position={[x,y,z]}><sphereGeometry args={[size,16,12]}/><meshBasicMaterial color={i%3===0?'#e8bc78':'#88b7b4'} transparent opacity={i%3===0?.65:.32}/></mesh>)}</group>;
 }
