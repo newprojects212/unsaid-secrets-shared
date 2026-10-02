@@ -36,6 +36,13 @@
       "when": 1790834944442,
       "tag": "0004_hide_moderated_content_and_private_message_bodies",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790953670321,
+      "tag": "0005_lock_private_reads_and_banned_access",
+      "breakpoints": true
     }
   ]
 }
