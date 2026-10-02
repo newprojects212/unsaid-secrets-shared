@@ -12,6 +12,7 @@ import { communityName, PROGRESS, type ProgressKey } from "@/lib/communities";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { MessageRequestButton } from "@/components/MessageRequestButton";
 
 export const Route = createFileRoute("/post/$postId")({
   head: () => ({
@@ -20,6 +21,8 @@ export const Route = createFileRoute("/post/$postId")({
       { name: "description", content: "An anonymous story shared on Unsaid." },
       { property: "og:title", content: "A story — Unsaid" },
       { property: "og:description", content: "An anonymous story shared on Unsaid." },
+      { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PostPage,
@@ -37,7 +40,7 @@ function PostPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("*")
+        .select("id,title,body,community,pseudonym,post_type,progress,created_at,expires_at")
         .eq("id", postId)
         .maybeSingle();
       if (error) throw error;
@@ -81,9 +84,13 @@ function PostPage() {
   }
 
   async function updateProgress(value: ProgressKey) {
-    await supabase.from("posts").update({ progress: value }).eq("id", postId);
+    if(value==='let_go'){setReleasing(true);await new Promise(r=>setTimeout(r,900))}
+    const {error}=await supabase.rpc('owner_post_action',{_id:postId,_action:'progress',_progress:value});
+    setReleasing(false);
+    if(error){toast(error.message);return}
     await queryClient.invalidateQueries({ queryKey: ["post", postId] });
   }
+  const [releasing,setReleasing]=useState(false);
 
   if (isLoading) {
     return (
@@ -108,13 +115,13 @@ function PostPage() {
   }
 
   const isLetter = post.post_type === "letter";
-  const isAuthor = user?.id === post.author_id;
+  const isAuthor = !!user && profile?.pseudonym === post.pseudonym;
 
   return (
     <SiteLayout>
       <article
         className={cn(
-          "animate-rise rounded-xl p-6",
+          "animate-rise rounded-lg p-6",releasing&&"release-embers",
           isLetter ? "border border-primary/25 bg-letter text-letter-foreground" : "quiet-card",
         )}
       >
@@ -149,6 +156,7 @@ function PostPage() {
           <div className="ml-auto">
             <ReportButton targetType="post" targetId={post.id} />
           </div>
+          {!isAuthor&&<MessageRequestButton targetType="post" targetId={post.id}/>}
         </div>
 
         {isAuthor && (
@@ -156,19 +164,15 @@ function PostPage() {
             <p className="text-xs text-muted-foreground">Where are you with this now?</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {(Object.keys(PROGRESS) as ProgressKey[]).map((key) => (
-                <button
+                <Button
                   key={key}
                   type="button"
+                  size="sm"
+                  variant={post.progress===key?'secondary':'ghost'}
                   onClick={() => updateProgress(key)}
-                  className={cn(
-                    "rounded-full border px-3 py-1 text-xs transition-colors",
-                    post.progress === key
-                      ? "border-primary/60 bg-primary/15 text-primary"
-                      : "border-border text-muted-foreground hover:text-foreground",
-                  )}
                 >
                   {PROGRESS[key]}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -189,6 +193,7 @@ function PostPage() {
                 <p className="mt-1.5 text-sm leading-relaxed whitespace-pre-wrap">{c.body}</p>
                 <div className="mt-2">
                   <ReportButton targetType="comment" targetId={c.id} />
+                  {profile?.pseudonym!==c.pseudonym&&<MessageRequestButton targetType="comment" targetId={c.id}/>}
                 </div>
               </div>
             ))

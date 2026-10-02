@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { REACTIONS, type ReactionKey } from "@/lib/communities";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function ReactionBar({ postId }: { postId: string }) {
   const { user } = useAuth();
@@ -12,12 +13,9 @@ export function ReactionBar({ postId }: { postId: string }) {
   const { data } = useQuery({
     queryKey: ["reactions", postId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("reactions")
-        .select("kind, user_id")
-        .eq("post_id", postId);
+      const { data, error } = await supabase.rpc("reaction_state", { _post: postId });
       if (error) throw error;
-      return data;
+      return data as unknown as {kind:string;mine:boolean}[];
     },
   });
 
@@ -28,20 +26,8 @@ export function ReactionBar({ postId }: { postId: string }) {
       toast("Sign in to respond.");
       return;
     }
-    const mine = rows.some((r) => r.kind === kind && r.user_id === user.id);
-    if (mine) {
-      await supabase
-        .from("reactions")
-        .delete()
-        .eq("post_id", postId)
-        .eq("user_id", user.id)
-        .eq("kind", kind);
-    } else {
-      const { error } = await supabase
-        .from("reactions")
-        .insert({ post_id: postId, user_id: user.id, kind });
-      if (error) toast("Couldn't save that right now.");
-    }
+    const { error } = await supabase.rpc("toggle_reaction", { _post: postId, _kind: kind });
+    if (error) toast("Couldn't save that right now.");
     await queryClient.invalidateQueries({ queryKey: ["reactions", postId] });
   }
 
@@ -49,14 +35,16 @@ export function ReactionBar({ postId }: { postId: string }) {
     <div className="flex flex-wrap gap-2">
       {(Object.keys(REACTIONS) as ReactionKey[]).map((kind) => {
         const count = rows.filter((r) => r.kind === kind).length;
-        const mine = !!user && rows.some((r) => r.kind === kind && r.user_id === user.id);
+        const mine = !!user && rows.some((r) => r.kind === kind && r.mine);
         return (
-          <button
+          <Button
             key={kind}
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => toggle(kind)}
             className={cn(
-              "rounded-full border border-border px-3 py-1.5 text-xs transition-colors",
+              "rounded-full border-border text-xs transition-all active:scale-95 active:shadow-quiet",
               mine
                 ? "border-primary/60 bg-primary/15 text-primary"
                 : "text-muted-foreground hover:text-foreground",
@@ -64,7 +52,7 @@ export function ReactionBar({ postId }: { postId: string }) {
           >
             {REACTIONS[kind]}
             {count > 0 && <span className="ml-1.5 opacity-70">{count}</span>}
-          </button>
+          </Button>
         );
       })}
     </div>
