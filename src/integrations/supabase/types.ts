@@ -361,6 +361,10 @@ export type Database = {
       }
       admin_open_conversation: { Args: { _id: string }; Returns: Json }
       admin_open_user: { Args: { _id: string }; Returns: Json }
+      admin_report_context: {
+        Args: { _id: string; _type: string }
+        Returns: Json
+      }
       block_conversation: { Args: { _id: string }; Returns: undefined }
       generate_pseudonym: { Args: never; Returns: string }
       has_role: {
