@@ -140,6 +140,7 @@ function AuthPage() {
                 <p className="rounded-lg border border-border bg-surface-2 p-3 text-xs leading-relaxed text-muted-foreground">
                   You're anonymous to other users. The site admin can see your account email for
                   safety and abuse handling.
+                  {' '}Messages are not end-to-end encrypted. The site admin can review conversations for safety and abuse handling.
                 </p>
               </>
             )}

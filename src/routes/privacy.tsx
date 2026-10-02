@@ -45,6 +45,7 @@ function Privacy() {
             reports you file. We do not sell data or run ad tracking.
           </p>
         </section>
+        <section><h2 className="font-serif text-lg text-foreground">Private messages</h2><p className="mt-2">Messages are not end-to-end encrypted. The site admin can review conversations for safety and abuse handling. Other users only see your pseudonym in a conversation.</p></section>
         <section>
           <h2 className="font-serif text-lg text-foreground">Letting go</h2>
           <p className="mt-2">
