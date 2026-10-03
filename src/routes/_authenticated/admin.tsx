@@ -41,6 +41,7 @@ function AdminPage() {
   const [emails, setEmails] = useState<Record<string, string>>({});
   const [contexts,setContexts]=useState<Record<string,ReportContext>>({});
   const [tab,setTab]=useState('reports');
+  const [conversationId,setConversationId]=useState('');
   async function openContext(report:ReportRow){const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});if(error){toast(error.message);return}setContexts(p=>({...p,[report.id]:data as ReportContext}));await queryClient.invalidateQueries({queryKey:['admin','log']})}
 
   const { data: reports } = useQuery({
@@ -167,7 +168,7 @@ function AdminPage() {
                 </div>
                 <p className="mt-2 text-sm">{r.reason}</p>
                 <Button size="sm" variant="link" className="mt-2 px-0" onClick={()=>openContext(r)}>Open full context</Button>
-                {contexts[r.id]&&<ReportDetails context={contexts[r.id]} onConversation={()=>setTab('conversations')}/>}
+                {contexts[r.id]&&<ReportDetails context={contexts[r.id]} onConversation={()=>{setConversationId(contexts[r.id]?.conversation_id??'');setTab('conversations')}}/>}
                 {emails[r.id] && (
                   <p className="mt-2 text-xs text-primary">Account email: {emails[r.id]}</p>
                 )}
@@ -193,7 +194,7 @@ function AdminPage() {
         </TabsContent>
 
         <TabsContent value="users"><AdminUsers /></TabsContent>
-        <TabsContent value="conversations"><AdminConversations /></TabsContent>
+        <TabsContent value="conversations"><AdminConversations key={conversationId} initialId={conversationId}/></TabsContent>
 
         <TabsContent value="log" className="mt-5 space-y-2">
           {log?.length ? (
