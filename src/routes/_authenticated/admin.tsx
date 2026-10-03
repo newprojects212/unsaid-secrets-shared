@@ -157,7 +157,7 @@ function AdminPage() {
 
         <TabsContent value="reports" className="mt-5 space-y-3">
           {reports?.length ? (
-            reports.map((r) => (
+            reports.map((r) => {const context=contexts[r.id];return (
               <div key={r.id} className="quiet-card p-4">
                 <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                   <span className="text-primary">{r.target_type}</span>
@@ -168,7 +168,7 @@ function AdminPage() {
                 </div>
                 <p className="mt-2 text-sm">{r.reason}</p>
                 <Button size="sm" variant="link" className="mt-2 px-0" onClick={()=>openContext(r)}>Open full context</Button>
-                {contexts[r.id]&&<ReportDetails context={contexts[r.id]} onConversation={()=>{setConversationId(contexts[r.id]?.conversation_id??'');setTab('conversations')}}/>}
+                {context&&<ReportDetails context={context} onConversation={()=>{setConversationId(context.conversation_id??'');setTab('conversations')}}/>}
                 {emails[r.id] && (
                   <p className="mt-2 text-xs text-primary">Account email: {emails[r.id]}</p>
                 )}
@@ -187,7 +187,7 @@ function AdminPage() {
                   </Button>
                 </div>
               </div>
-            ))
+            )})
           ) : (
             <p className="text-sm text-muted-foreground">No reports.</p>
           )}
