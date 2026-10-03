@@ -32,11 +32,14 @@ type ReportRow = {
   status: string;
   created_at: string;
 };
+type ReportContext={post_id?:string;author_id?:string;email?:string;body?:string;title?:string;conversation_id?:string;status?:string;sender?:string;sender_email?:string;recipient?:string;recipient_email?:string};
 
 function AdminPage() {
   const { user, isAdmin, loading } = useAuth();
   const queryClient = useQueryClient();
   const [emails, setEmails] = useState<Record<string, string>>({});
+  const [contexts,setContexts]=useState<Record<string,ReportContext>>({});
+  async function openContext(report:ReportRow){const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});if(error){toast(error.message);return}setContexts(p=>({...p,[report.id]:data as ReportContext}));await queryClient.invalidateQueries({queryKey:['admin','log']})}
 
   const { data: reports } = useQuery({
     queryKey: ["admin", "reports"],
@@ -78,34 +81,14 @@ function AdminPage() {
     await queryClient.invalidateQueries({ queryKey: ["admin", "log"] });
   }
 
-  async function authorOf(report: ReportRow) {
-    const table = report.target_type === "post" ? "posts" : "comments";
-    const { data } = await supabase
-      .from(table)
-      .select("author_id")
-      .eq("id", report.target_id)
-      .maybeSingle();
-    return data?.author_id as string | undefined;
-  }
-
   async function lookupEmail(report: ReportRow) {
     if(report.target_type==='conversation'){toast('Open this report in Conversations.');return}
-    const authorId = await authorOf(report);
-    if (!authorId) {
-      toast("Content not found.");
-      return;
-    }
-    const { data } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("id", authorId)
-      .maybeSingle();
-    if (!data) {
-      toast("No profile found.");
-      return;
-    }
-    setEmails((prev) => ({ ...prev, [report.id]: data.email }));
-    await logAction("lookup_email", report.target_type, report.target_id, "Viewed account email");
+    const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});
+    if(error){toast(error.message);return}
+    const context=data as ReportContext;
+    setContexts(p=>({...p,[report.id]:context}));
+    if(context.email)setEmails(p=>({...p,[report.id]:context.email ?? ''}));
+    await queryClient.invalidateQueries({queryKey:['admin','log']});
   }
 
   async function removeContent(report: ReportRow) {
@@ -121,7 +104,8 @@ function AdminPage() {
 
   async function banAuthor(report: ReportRow) {
     if(report.target_type==='conversation'){toast('Review the participants in Conversations.');return}
-    const authorId = await authorOf(report);
+    let authorId=contexts[report.id]?.author_id;
+    if(!authorId){const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});if(error){toast(error.message);return}authorId=(data as ReportContext)?.author_id}
     if (!authorId) {
       toast("Content not found.");
       return;
@@ -180,9 +164,8 @@ function AdminPage() {
                   <span>{r.status}</span>
                 </div>
                 <p className="mt-2 text-sm">{r.reason}</p>
-                {r.target_type==='post'&&<Link className="mt-2 block text-xs text-primary underline" to="/post/$postId" params={{postId:r.target_id}}>View reported post</Link>}
-                {r.target_type==='comment'&&<p className="mt-2 text-xs text-muted-foreground">Comment ID: {r.target_id} · Review in Users</p>}
-                {r.target_type==='conversation'&&<p className="mt-2 text-xs text-muted-foreground">Conversation ID: {r.target_id} · Review in Conversations</p>}
+                <Button size="sm" variant="link" className="mt-2 px-0" onClick={()=>openContext(r)}>Open full context</Button>
+                {contexts[r.id]&&<div className="border-l border-primary/40 pl-3 text-xs"><p>{contexts[r.id].title||`${contexts[r.id].sender??''} ↔ ${contexts[r.id].recipient??''}`}</p><p className="mt-1 whitespace-pre-wrap">{contexts[r.id].body}</p><p className="mt-1 text-muted-foreground">{contexts[r.id].email||`${contexts[r.id].sender_email??''} · ${contexts[r.id].recipient_email??''}`}</p>{contexts[r.id].post_id&&<Link className="text-primary underline" to="/post/$postId" params={{postId:contexts[r.id].post_id}}>View post</Link>}{contexts[r.id].conversation_id&&<Button size="sm" variant="link" onClick={()=>{const tab=document.querySelector('[data-state][value="conversations"]') as HTMLElement|null;tab?.click()}}>Review in Conversations</Button>}</div>}
                 {emails[r.id] && (
                   <p className="mt-2 text-xs text-primary">Account email: {emails[r.id]}</p>
                 )}
