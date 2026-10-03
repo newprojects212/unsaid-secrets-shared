@@ -50,6 +50,20 @@
       "when": 1790953740340,
       "tag": "0006_admin_report_context_and_safe_reactions",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791008151844,
+      "tag": "0007_private_message_constraints_and_safe_participant_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791008198033,
+      "tag": "0008_admin_only_profile_email_reads",
+      "breakpoints": true
     }
   ]
 }

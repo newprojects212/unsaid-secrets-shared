@@ -32,11 +32,17 @@ type ReportRow = {
   status: string;
   created_at: string;
 };
+type ReportContext={post_id?:string;author_id?:string;email?:string;body?:string;title?:string;conversation_id?:string;status?:string;sender?:string;sender_email?:string;recipient?:string;recipient_email?:string};
+function ReportDetails({context,onConversation}:{context:ReportContext;onConversation:()=>void}){return <div className="border-l border-primary/40 pl-3 text-xs"><p>{context.title||`${context.sender??''} ↔ ${context.recipient??''}`}</p><p className="mt-1 whitespace-pre-wrap">{context.body}</p><p className="mt-1 text-muted-foreground">{context.email||`${context.sender_email??''} · ${context.recipient_email??''}`}</p>{context.post_id&&<Link className="text-primary underline" to="/post/$postId" params={{postId:context.post_id}}>View post</Link>}{context.conversation_id&&<Button size="sm" variant="link" onClick={onConversation}>Review in Conversations</Button>}</div>}
 
 function AdminPage() {
   const { user, isAdmin, loading } = useAuth();
   const queryClient = useQueryClient();
   const [emails, setEmails] = useState<Record<string, string>>({});
+  const [contexts,setContexts]=useState<Record<string,ReportContext>>({});
+  const [tab,setTab]=useState('reports');
+  const [conversationId,setConversationId]=useState('');
+  async function openContext(report:ReportRow){const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});if(error){toast(error.message);return}setContexts(p=>({...p,[report.id]:data as ReportContext}));await queryClient.invalidateQueries({queryKey:['admin','log']})}
 
   const { data: reports } = useQuery({
     queryKey: ["admin", "reports"],
@@ -78,34 +84,14 @@ function AdminPage() {
     await queryClient.invalidateQueries({ queryKey: ["admin", "log"] });
   }
 
-  async function authorOf(report: ReportRow) {
-    const table = report.target_type === "post" ? "posts" : "comments";
-    const { data } = await supabase
-      .from(table)
-      .select("author_id")
-      .eq("id", report.target_id)
-      .maybeSingle();
-    return data?.author_id as string | undefined;
-  }
-
   async function lookupEmail(report: ReportRow) {
     if(report.target_type==='conversation'){toast('Open this report in Conversations.');return}
-    const authorId = await authorOf(report);
-    if (!authorId) {
-      toast("Content not found.");
-      return;
-    }
-    const { data } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("id", authorId)
-      .maybeSingle();
-    if (!data) {
-      toast("No profile found.");
-      return;
-    }
-    setEmails((prev) => ({ ...prev, [report.id]: data.email }));
-    await logAction("lookup_email", report.target_type, report.target_id, "Viewed account email");
+    const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});
+    if(error){toast(error.message);return}
+    const context=data as ReportContext;
+    setContexts(p=>({...p,[report.id]:context}));
+    if(context.email)setEmails(p=>({...p,[report.id]:context.email ?? ''}));
+    await queryClient.invalidateQueries({queryKey:['admin','log']});
   }
 
   async function removeContent(report: ReportRow) {
@@ -121,7 +107,8 @@ function AdminPage() {
 
   async function banAuthor(report: ReportRow) {
     if(report.target_type==='conversation'){toast('Review the participants in Conversations.');return}
-    const authorId = await authorOf(report);
+    let authorId=contexts[report.id]?.author_id;
+    if(!authorId){const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});if(error){toast(error.message);return}authorId=(data as ReportContext)?.author_id}
     if (!authorId) {
       toast("Content not found.");
       return;
@@ -160,7 +147,7 @@ function AdminPage() {
   return (
     <SiteLayout>
       <h1 className="font-serif text-3xl">Moderation</h1>
-      <Tabs defaultValue="reports" className="mt-6">
+      <Tabs value={tab} onValueChange={setTab} className="mt-6">
         <TabsList>
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
@@ -170,7 +157,7 @@ function AdminPage() {
 
         <TabsContent value="reports" className="mt-5 space-y-3">
           {reports?.length ? (
-            reports.map((r) => (
+            reports.map((r) => {const context=contexts[r.id];return (
               <div key={r.id} className="quiet-card p-4">
                 <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                   <span className="text-primary">{r.target_type}</span>
@@ -180,9 +167,8 @@ function AdminPage() {
                   <span>{r.status}</span>
                 </div>
                 <p className="mt-2 text-sm">{r.reason}</p>
-                {r.target_type==='post'&&<Link className="mt-2 block text-xs text-primary underline" to="/post/$postId" params={{postId:r.target_id}}>View reported post</Link>}
-                {r.target_type==='comment'&&<p className="mt-2 text-xs text-muted-foreground">Comment ID: {r.target_id} · Review in Users</p>}
-                {r.target_type==='conversation'&&<p className="mt-2 text-xs text-muted-foreground">Conversation ID: {r.target_id} · Review in Conversations</p>}
+                <Button size="sm" variant="link" className="mt-2 px-0" onClick={()=>openContext(r)}>Open full context</Button>
+                {context&&<ReportDetails context={context} onConversation={()=>{setConversationId(context.conversation_id??'');setTab('conversations')}}/>}
                 {emails[r.id] && (
                   <p className="mt-2 text-xs text-primary">Account email: {emails[r.id]}</p>
                 )}
@@ -201,14 +187,14 @@ function AdminPage() {
                   </Button>
                 </div>
               </div>
-            ))
+            )})
           ) : (
             <p className="text-sm text-muted-foreground">No reports.</p>
           )}
         </TabsContent>
 
         <TabsContent value="users"><AdminUsers /></TabsContent>
-        <TabsContent value="conversations"><AdminConversations /></TabsContent>
+        <TabsContent value="conversations"><AdminConversations key={conversationId} initialId={conversationId}/></TabsContent>
 
         <TabsContent value="log" className="mt-5 space-y-2">
           {log?.length ? (

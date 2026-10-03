@@ -11,6 +11,8 @@ export const Route = createFileRoute("/rules")({
       },
       { property: "og:title", content: "Rules — Unsaid" },
       { property: "og:description", content: "How we keep Unsaid a safe, quiet place." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Rules,

@@ -6,7 +6,6 @@ export type Profile = {
   id: string;
   pseudonym: string;
   is_banned: boolean;
-  email: string;
 };
 
 type AuthValue = {
@@ -41,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const { data: existing } = await supabase
       .from("profiles")
-      .select("id, pseudonym, is_banned, email")
+       .select("id, pseudonym, is_banned")
       .eq("id", current.user.id)
       .maybeSingle();
 
@@ -55,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: current.user.email ?? "unknown",
           pseudonym: pseudonym ?? `Quiet${Math.floor(Math.random() * 900) + 100}`,
         })
-        .select("id, pseudonym, is_banned, email")
+         .select("id, pseudonym, is_banned")
         .maybeSingle();
       row = inserted;
     }

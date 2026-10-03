@@ -11,6 +11,8 @@ export const Route = createFileRoute("/privacy")({
       },
       { property: "og:title", content: "Privacy Policy — Unsaid" },
       { property: "og:description", content: "What Unsaid stores and how anonymity works." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Privacy,
