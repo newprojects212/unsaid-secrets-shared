@@ -355,6 +355,7 @@ export type Database = {
     }
     Functions: {
       admin_list_conversations: { Args: never; Returns: Json }
+      admin_list_users: { Args: never; Returns: Json }
       admin_moderate: {
         Args: { _action: string; _id: string; _kind: string }
         Returns: undefined

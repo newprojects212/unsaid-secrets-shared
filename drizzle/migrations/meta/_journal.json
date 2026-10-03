@@ -57,6 +57,13 @@
       "when": 1791008151844,
       "tag": "0007_private_message_constraints_and_safe_participant_access",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791008198033,
+      "tag": "0008_admin_only_profile_email_reads",
+      "breakpoints": true
     }
   ]
 }
