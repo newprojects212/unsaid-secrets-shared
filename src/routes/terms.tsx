@@ -8,6 +8,8 @@ export const Route = createFileRoute("/terms")({
       { name: "description", content: "The terms of using Unsaid, an anonymous community." },
       { property: "og:title", content: "Terms — Unsaid" },
       { property: "og:description", content: "The terms of using Unsaid." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Terms,

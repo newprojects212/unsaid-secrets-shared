@@ -21,6 +21,8 @@ export const Route = createFileRoute("/c/$slug")({
         },
         { property: "og:title", content: `${name} — Unsaid` },
         { property: "og:description", content: `Anonymous stories shared in ${name} on Unsaid.` },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary" },
       ],
     };
   },

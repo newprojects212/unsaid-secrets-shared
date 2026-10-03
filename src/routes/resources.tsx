@@ -11,6 +11,8 @@ export const Route = createFileRoute("/resources")({
       },
       { property: "og:title", content: "Help resources — Unsaid" },
       { property: "og:description", content: "Crisis lines and support directories." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Resources,

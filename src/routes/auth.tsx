@@ -20,6 +20,8 @@ export const Route = createFileRoute("/auth")({
       },
       { property: "og:title", content: "Sign in — Unsaid" },
       { property: "og:description", content: "Sign in to Unsaid to share anonymously." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,

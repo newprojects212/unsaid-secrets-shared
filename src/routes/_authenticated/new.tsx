@@ -29,6 +29,8 @@ export const Route = createFileRoute("/_authenticated/new")({
       { name: "description", content: "Write it down anonymously and set it down." },
       { property: "og:title", content: "Share something — Unsaid" },
       { property: "og:description", content: "Write it down anonymously and set it down." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: NewPost,
