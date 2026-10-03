@@ -165,7 +165,7 @@ function AdminPage() {
                 </div>
                 <p className="mt-2 text-sm">{r.reason}</p>
                 <Button size="sm" variant="link" className="mt-2 px-0" onClick={()=>openContext(r)}>Open full context</Button>
-                {contexts[r.id]&&<div className="border-l border-primary/40 pl-3 text-xs"><p>{contexts[r.id].title||`${contexts[r.id].sender??''} ↔ ${contexts[r.id].recipient??''}`}</p><p className="mt-1 whitespace-pre-wrap">{contexts[r.id].body}</p><p className="mt-1 text-muted-foreground">{contexts[r.id].email||`${contexts[r.id].sender_email??''} · ${contexts[r.id].recipient_email??''}`}</p>{contexts[r.id].post_id&&<Link className="text-primary underline" to="/post/$postId" params={{postId:contexts[r.id].post_id}}>View post</Link>}{contexts[r.id].conversation_id&&<Button size="sm" variant="link" onClick={()=>{const tab=document.querySelector('[data-state][value="conversations"]') as HTMLElement|null;tab?.click()}}>Review in Conversations</Button>}</div>}
+                {contexts[r.id]&&<ReportDetails context={contexts[r.id]} onConversation={()=>setTab('conversations')}/>}
                 {emails[r.id] && (
                   <p className="mt-2 text-xs text-primary">Account email: {emails[r.id]}</p>
                 )}
