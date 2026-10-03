@@ -33,12 +33,14 @@ type ReportRow = {
   created_at: string;
 };
 type ReportContext={post_id?:string;author_id?:string;email?:string;body?:string;title?:string;conversation_id?:string;status?:string;sender?:string;sender_email?:string;recipient?:string;recipient_email?:string};
+function ReportDetails({context,onConversation}:{context:ReportContext;onConversation:()=>void}){return <div className="border-l border-primary/40 pl-3 text-xs"><p>{context.title||`${context.sender??''} ↔ ${context.recipient??''}`}</p><p className="mt-1 whitespace-pre-wrap">{context.body}</p><p className="mt-1 text-muted-foreground">{context.email||`${context.sender_email??''} · ${context.recipient_email??''}`}</p>{context.post_id&&<Link className="text-primary underline" to="/post/$postId" params={{postId:context.post_id}}>View post</Link>}{context.conversation_id&&<Button size="sm" variant="link" onClick={onConversation}>Review in Conversations</Button>}</div>}
 
 function AdminPage() {
   const { user, isAdmin, loading } = useAuth();
   const queryClient = useQueryClient();
   const [emails, setEmails] = useState<Record<string, string>>({});
   const [contexts,setContexts]=useState<Record<string,ReportContext>>({});
+  const [tab,setTab]=useState('reports');
   async function openContext(report:ReportRow){const {data,error}=await supabase.rpc('admin_report_context',{_type:report.target_type,_id:report.target_id});if(error){toast(error.message);return}setContexts(p=>({...p,[report.id]:data as ReportContext}));await queryClient.invalidateQueries({queryKey:['admin','log']})}
 
   const { data: reports } = useQuery({
@@ -144,7 +146,7 @@ function AdminPage() {
   return (
     <SiteLayout>
       <h1 className="font-serif text-3xl">Moderation</h1>
-      <Tabs defaultValue="reports" className="mt-6">
+      <Tabs value={tab} onValueChange={setTab} className="mt-6">
         <TabsList>
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
