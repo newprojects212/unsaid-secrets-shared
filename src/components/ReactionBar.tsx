@@ -5,10 +5,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { REACTIONS, type ReactionKey } from "@/lib/communities";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useState } from 'react';
 
 export function ReactionBar({ postId }: { postId: string }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [pressed,setPressed]=useState<ReactionKey|null>(null);
 
   const { data } = useQuery({
     queryKey: ["reactions", postId],
@@ -28,6 +30,7 @@ export function ReactionBar({ postId }: { postId: string }) {
     }
     const { error } = await supabase.rpc("toggle_reaction", { _post: postId, _kind: kind });
     if (error) toast("Couldn't save that right now.");
+    else {setPressed(kind);setTimeout(()=>setPressed(null),500);}
     await queryClient.invalidateQueries({ queryKey: ["reactions", postId] });
   }
 
@@ -45,6 +48,7 @@ export function ReactionBar({ postId }: { postId: string }) {
             onClick={() => toggle(kind)}
             className={cn(
               "rounded-full border-border text-xs transition-all active:scale-95 active:shadow-quiet",
+              pressed===kind && 'reaction-pulse',
               mine
                 ? "border-primary/60 bg-primary/15 text-primary"
                 : "text-muted-foreground hover:text-foreground",
