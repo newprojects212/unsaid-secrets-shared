@@ -43,7 +43,7 @@ function NewPost() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
 
-  const [community, setCommunity] = useState(search.community ?? COMMUNITIES[0]!.slug);
+  const [community, setCommunity] = useState(search.community ?? COMMUNITIES[0]?.slug ?? 'regrets');
   const [postType, setPostType] = useState<"story" | "letter">("story");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -59,8 +59,8 @@ function NewPost() {
       toast("Add a short title and a little more text.");
       return;
     }
-    if(letGo!=="never"||progress==='let_go'){setReleasing(true);await new Promise(r=>setTimeout(r,850))}
     setBusy(true);
+    if(letGo!=="never"||progress==='let_go'){setReleasing(true);await new Promise(r=>setTimeout(r,850))}
     const expires_at =
       letGo === "never"
         ? null

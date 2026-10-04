@@ -96,6 +96,11 @@
   --letter-foreground: oklch(0.94 0.02 80);
   --glow: oklch(0.67 0.065 180);
   --mist: oklch(0.33 0.06 175 / 0.25);
+  --warm-mist: oklch(0.38 0.05 72 / .11);
+  --scene-amber: #e8bc78;
+  --scene-teal: #88b7b4;
+  --scene-frame: #594d40;
+  --shadow-glow: 0 0 22px color-mix(in oklab, var(--primary) 25%, transparent);
 }
 
 .dark {
@@ -108,7 +113,7 @@
   }
 
   body {
-    background: radial-gradient(ellipse at 85% 10%, var(--mist), transparent 45%), radial-gradient(ellipse at 10% 70%, oklch(0.38 0.05 72 / .11), transparent 55%), var(--color-background);
+    background: radial-gradient(ellipse at 85% 10%, var(--mist), transparent 45%), radial-gradient(ellipse at 10% 70%, var(--warm-mist), transparent 55%), var(--color-background);
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -140,4 +145,12 @@
 .stagger-feed > :nth-child(2) { --i: 1; }.stagger-feed > :nth-child(3) { --i: 2; }.stagger-feed > :nth-child(4) { --i: 3; }.stagger-feed > :nth-child(5) { --i: 4; }.stagger-feed > :nth-child(6) { --i: 5; }
 @keyframes release { 0% { opacity:1; filter:blur(0); transform: translateY(0) } 60% { opacity:.8; filter:blur(2px); transform:translateY(-8px) } 100% { opacity:.1; filter:blur(14px); transform:translateY(-24px) } }
 .release-embers { animation: release .9s ease forwards; }
+.release-embers::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 20% 75%, var(--primary) 0 2px, transparent 3px), radial-gradient(circle at 45% 65%, var(--glow) 0 2px, transparent 3px), radial-gradient(circle at 75% 80%, var(--primary) 0 3px, transparent 4px); animation: ember-flight .9s ease-out forwards; }
+.release-embers { position: relative; }
+@keyframes ember-flight { to { transform: translateY(-90px); opacity: 0; } }
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background: linear-gradient(135deg, transparent 25%, var(--mist) 55%, transparent 80%); background-size: 200% 200%; animation: mist-drift 32s ease-in-out infinite alternate; }
+@keyframes mist-drift { from { background-position: 0 0; } to { background-position: 100% 100%; } }
+.scene-veil { mask-image: linear-gradient(to right, transparent 25%, black 65%); }
+.reaction-pulse { animation: support-pulse .5s ease-out; }
+@keyframes support-pulse { 50% { box-shadow: var(--shadow-glow); transform: scale(1.04); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } .tilt-card { transform: none !important; } }

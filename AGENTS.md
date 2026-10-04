@@ -15,3 +15,5 @@
 - Communities are a static list in `src/lib/communities.ts` (no table) since the set is fixed.
 - Private messaging and profile details use validated security-definer database RPCs returning pseudonym-only DTOs; this keeps participant identifiers out of normal client responses.
 - Separate author deletion from admin removal and enforce immutable moderation flags in database triggers; owner updates cannot undo moderation.
+- Reuse shared pointer-motion handlers for all tiltable cards so reduced-motion and touch safeguards stay consistent.
+- Keep Three.js material colors in global CSS tokens and sample them after hydration so the scene follows the theme.
