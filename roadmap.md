@@ -3,3 +3,5 @@
 - [ ] Add secure message requests, chats, blocks, moderation, and live updates.
 - [ ] Expand admin users/conversations/context/audit controls.
 - [ ] Update safety notices and verify desktop/mobile flows.
+- [ ] Add searchable pseudonym-only profiles and links from posts/comments; keep emails and private activity admin-only.
+- [ ] Verify the special admin area and enable the requesting owner's access with their confirmed account; retain disclosed, audited conversation review without read notifications.
