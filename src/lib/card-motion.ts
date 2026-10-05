@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
 
-export function tiltCard(event: MouseEvent<HTMLAnchorElement>) {
+export function tiltCard(event: MouseEvent<HTMLElement>) {
   if (window.matchMedia('(hover: none), (prefers-reduced-motion: reduce)').matches) return;
   const element = event.currentTarget;
   const rect = element.getBoundingClientRect();
@@ -11,6 +11,6 @@ export function tiltCard(event: MouseEvent<HTMLAnchorElement>) {
   element.style.transform = `perspective(900px) rotateX(${(y - .5) * -3}deg) rotateY(${(x - .5) * 3}deg)`;
 }
 
-export function resetCard(event: MouseEvent<HTMLAnchorElement>) {
+export function resetCard(event: MouseEvent<HTMLElement>) {
   event.currentTarget.style.transform = '';
 }
