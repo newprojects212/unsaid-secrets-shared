@@ -38,7 +38,7 @@ function Terms() {
           <p className="mt-2">
             You keep ownership of what you write and grant us permission to display it on the site.
             Do not post content you have no right to share, or content that identifies other real
-            people.
+            people. Your already-public stories and replies may be grouped on a searchable pseudonym profile.
           </p>
         </section>
         <section>

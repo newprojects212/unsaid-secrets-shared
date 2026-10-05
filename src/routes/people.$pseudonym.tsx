@@ -1,0 +1,12 @@
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { SiteLayout } from '@/components/SiteLayout';
+import { PostCard, type PostRow } from '@/components/PostCard';
+import { Tabs,TabsContent,TabsList,TabsTrigger } from '@/components/ui/tabs';
+type PublicProfile={pseudonym:string;posts:PostRow[];comments:{id:string;post_id:string;body:string;created_at:string}[]};
+export const Route=createFileRoute('/people/$pseudonym')({
+  head:({params})=>({meta:[{title:`${params.pseudonym} — Unsaid`},{name:'description',content:'Public stories and replies from an anonymous voice on Unsaid.'},{property:'og:title',content:`${params.pseudonym} — Unsaid`},{property:'og:description',content:'Public stories and replies from an anonymous voice on Unsaid.'},{property:'og:type',content:'profile'},{name:'twitter:card',content:'summary'}]}),component:PublicProfilePage,
+});
+function PublicProfilePage(){const {pseudonym}=Route.useParams();const {data,isLoading,error}=useQuery({queryKey:['public-profile',pseudonym],queryFn:async()=>{const {data,error}=await supabase.rpc('public_pseudonym_profile',{_pseudonym:pseudonym});if(error)throw error;return data as unknown as PublicProfile|null}});
+return <SiteLayout><Link to="/people" className="text-sm text-primary">← People</Link><h1 className="mt-5 break-all text-4xl">{pseudonym}</h1>{isLoading?<div className="mt-8 h-40 animate-pulse rounded bg-surface"/>:error?<p className="mt-8 text-destructive">Couldn't open this profile.</p>:!data?.posts.length&&!data?.comments.length?<p className="mt-8 text-muted-foreground">No public stories or replies.</p>:<Tabs defaultValue="posts" className="mt-8"><TabsList><TabsTrigger value="posts">Stories</TabsTrigger><TabsTrigger value="comments">Replies</TabsTrigger></TabsList><TabsContent value="posts" className="stagger-feed mt-5 space-y-3">{data?.posts.map(post=><PostCard key={post.id} post={post}/>)}{!data?.posts.length&&<p className="text-muted-foreground">No public stories.</p>}</TabsContent><TabsContent value="comments" className="mt-5 space-y-3">{data?.comments.map(comment=><Link key={comment.id} to="/post/$postId" params={{postId:comment.post_id}} className="quiet-card block whitespace-pre-wrap break-words p-5 text-sm">{comment.body}<time className="mt-3 block text-xs text-muted-foreground">{new Date(comment.created_at).toLocaleDateString()}</time></Link>)}</TabsContent></Tabs>}</SiteLayout>}

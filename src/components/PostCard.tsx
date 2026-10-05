@@ -34,9 +34,7 @@ export function ProgressTag({ value }: { value: string }) {
 export function PostCard({ post }: { post: PostRow }) {
   const isLetter = post.post_type === "letter";
   return (
-    <Link
-      to="/post/$postId"
-      params={{ postId: post.id }}
+    <article
       onMouseMove={tiltCard}
       onMouseLeave={resetCard}
       className={cn(
@@ -49,17 +47,17 @@ export function PostCard({ post }: { post: PostRow }) {
       <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
         <span className="text-primary">{communityName(post.community)}</span>
         <span>·</span>
-        <span>{post.pseudonym}</span>
+        <Link to="/people/$pseudonym" params={{pseudonym:post.pseudonym}} className="hover:text-primary">{post.pseudonym}</Link>
         {isLetter && <span className="italic">· letter to my past self</span>}
       </div>
-      <h3 className="mt-2 font-serif text-lg leading-snug">{post.title}</h3>
-      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.body}</p>
+      <h3 className="mt-2 font-serif text-lg leading-snug"><Link to="/post/$postId" params={{postId:post.id}} className="hover:text-primary">{post.title}</Link></h3>
+      <Link to="/post/$postId" params={{postId:post.id}} className="mt-2 block line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.body}</Link>
       <div className="mt-3 flex items-center gap-2">
         <ProgressTag value={post.progress} />
         {post.expires_at && (
           <span className="text-[11px] text-muted-foreground">fading soon</span>
         )}
       </div>
-    </Link>
+    </article>
   );
 }

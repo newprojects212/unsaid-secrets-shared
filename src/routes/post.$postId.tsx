@@ -130,7 +130,7 @@ function PostPage() {
             {communityName(post.community)}
           </Link>
           <span>·</span>
-          <span>{post.pseudonym}</span>
+          <Link to="/people/$pseudonym" params={{pseudonym:post.pseudonym}} className="hover:text-primary">{post.pseudonym}</Link>
           {isLetter && <span className="italic">· letter to my past self</span>}
         </div>
 
@@ -189,7 +189,7 @@ function PostPage() {
           {comments?.length ? (
             comments.map((c) => (
               <div key={c.id} className="quiet-card animate-rise p-4">
-                <div className="text-[11px] text-muted-foreground">{c.pseudonym}</div>
+                <Link to="/people/$pseudonym" params={{pseudonym:c.pseudonym}} className="text-[11px] text-muted-foreground hover:text-primary">{c.pseudonym}</Link>
                 <p className="mt-1.5 text-sm leading-relaxed whitespace-pre-wrap">{c.body}</p>
                 <div className="mt-2">
                   <ReportButton targetType="comment" targetId={c.id} />

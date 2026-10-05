@@ -17,3 +17,4 @@
 - Separate author deletion from admin removal and enforce immutable moderation flags in database triggers; owner updates cannot undo moderation.
 - Reuse shared pointer-motion handlers for all tiltable cards so reduced-motion and touch safeguards stay consistent.
 - Keep Three.js material colors in global CSS tokens and sample them after hydration so the scene follows the theme.
+- Public pseudonym discovery uses SECURITY INVOKER RPCs with safe projections and existing visibility RLS, never profile-table reads, to keep hidden content and identities private.

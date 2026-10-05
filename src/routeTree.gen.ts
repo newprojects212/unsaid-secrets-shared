@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PeopleRouteImport } from './routes/people'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as RulesRouteImport } from './routes/rules'
@@ -21,6 +22,7 @@ import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
+import { Route as PeoplePseudonymRouteImport } from './routes/people.$pseudonym'
 import { Route as PostPostIdRouteImport } from './routes/post.$postId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +37,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PeopleRoute = PeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -82,6 +89,11 @@ const CSlugRoute = CSlugRouteImport.update({
   path: '/c/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PeoplePseudonymRoute = PeoplePseudonymRouteImport.update({
+  id: '/$pseudonym',
+  path: '/$pseudonym',
+  getParentRoute: () => PeopleRoute,
+} as any)
 const PostPostIdRoute = PostPostIdRouteImport.update({
   id: '/post/$postId',
   path: '/post/$postId',
@@ -91,6 +103,7 @@ const PostPostIdRoute = PostPostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/people': typeof PeopleRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/resources': typeof ResourcesRoute
   '/rules': typeof RulesRoute
@@ -100,11 +113,13 @@ export interface FileRoutesByFullPath {
   '/new': typeof AuthenticatedNewRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/c/$slug': typeof CSlugRoute
+  '/people/$pseudonym': typeof PeoplePseudonymRoute
   '/post/$postId': typeof PostPostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/people': typeof PeopleRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/resources': typeof ResourcesRoute
   '/rules': typeof RulesRoute
@@ -114,6 +129,7 @@ export interface FileRoutesByTo {
   '/new': typeof AuthenticatedNewRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/c/$slug': typeof CSlugRoute
+  '/people/$pseudonym': typeof PeoplePseudonymRoute
   '/post/$postId': typeof PostPostIdRoute
 }
 export interface FileRoutesById {
@@ -121,6 +137,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/people': typeof PeopleRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/resources': typeof ResourcesRoute
   '/rules': typeof RulesRoute
@@ -130,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/c/$slug': typeof CSlugRoute
+  '/people/$pseudonym': typeof PeoplePseudonymRoute
   '/post/$postId': typeof PostPostIdRoute
 }
 export interface FileRouteTypes {
@@ -137,6 +155,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/people'
     | '/privacy'
     | '/resources'
     | '/rules'
@@ -146,11 +165,13 @@ export interface FileRouteTypes {
     | '/new'
     | '/profile'
     | '/c/$slug'
+    | '/people/$pseudonym'
     | '/post/$postId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/people'
     | '/privacy'
     | '/resources'
     | '/rules'
@@ -160,12 +181,14 @@ export interface FileRouteTypes {
     | '/new'
     | '/profile'
     | '/c/$slug'
+    | '/people/$pseudonym'
     | '/post/$postId'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/people'
     | '/privacy'
     | '/resources'
     | '/rules'
@@ -175,6 +198,7 @@ export interface FileRouteTypes {
     | '/_authenticated/new'
     | '/_authenticated/profile'
     | '/c/$slug'
+    | '/people/$pseudonym'
     | '/post/$postId'
   fileRoutesById: FileRoutesById
 }
@@ -182,6 +206,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PeopleRoute: typeof PeopleRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   ResourcesRoute: typeof ResourcesRoute
   RulesRoute: typeof RulesRoute
@@ -211,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/people': {
+      id: '/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof PeopleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -276,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/people/$pseudonym': {
+      id: '/people/$pseudonym'
+      path: '/$pseudonym'
+      fullPath: '/people/$pseudonym'
+      preLoaderRoute: typeof PeoplePseudonymRouteImport
+      parentRoute: typeof PeopleRoute
+    }
     '/post/$postId': {
       id: '/post/$postId'
       path: '/post/$postId'
@@ -303,10 +342,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface PeopleRouteChildren {
+  PeoplePseudonymRoute: typeof PeoplePseudonymRoute
+}
+
+const PeopleRouteChildren: PeopleRouteChildren = {
+  PeoplePseudonymRoute: PeoplePseudonymRoute,
+}
+
+const PeopleRouteWithChildren =
+  PeopleRoute._addFileChildren(PeopleRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PeopleRoute: PeopleRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   ResourcesRoute: ResourcesRoute,
   RulesRoute: RulesRoute,
