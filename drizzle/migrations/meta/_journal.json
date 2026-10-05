@@ -71,6 +71,13 @@
       "when": 1791220395861,
       "tag": "0009_anonymous_profile_discovery_and_chat_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791220500711,
+      "tag": "0010_consistent_public_profile_visibility",
+      "breakpoints": true
     }
   ]
 }
