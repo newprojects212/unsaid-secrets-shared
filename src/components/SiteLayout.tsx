@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { Home, LayoutGrid, PenLine, MessageCircle, UserRound, Shield } from "lucide-react";
+import { Home, LayoutGrid, PenLine, MessageCircle, UserRound, Shield, Search } from "lucide-react";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const { session, profile, isAdmin } = useAuth();
@@ -32,6 +32,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             Unsaid
           </Link>
           <nav className="flex items-center gap-2 text-sm">
+            <Link to="/people" aria-label="Search people"><Button variant="ghost" size="icon" title="Search people"><Search className="size-4"/></Button></Link>
              <div className="hidden items-center gap-1 md:flex">{links.map(l=><Link key={l.label} to={l.to} {...(l.label==='Communities'?{hash:'rooms'}:{})} className="relative flex items-center gap-1.5 rounded px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"><l.icon className="size-4"/>{l.label}{l.label==='Messages'&&unread>0&&<span className="rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">{unread}</span>}</Link>)}</div>
             <Link
               to="/rules"
