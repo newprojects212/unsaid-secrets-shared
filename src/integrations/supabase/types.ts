@@ -383,6 +383,7 @@ export type Database = {
         Args: { _action: string; _id: string; _progress?: string }
         Returns: undefined
       }
+      public_pseudonym_profile: { Args: { _pseudonym: string }; Returns: Json }
       reaction_state: { Args: { _post: string }; Returns: Json }
       read_conversation: { Args: { _id: string }; Returns: Json }
       request_message: {
@@ -393,6 +394,7 @@ export type Database = {
         Args: { _id: string; _status: string }
         Returns: undefined
       }
+      search_pseudonyms: { Args: { _query: string }; Returns: Json }
       send_chat_message: {
         Args: { _body: string; _id: string }
         Returns: undefined
