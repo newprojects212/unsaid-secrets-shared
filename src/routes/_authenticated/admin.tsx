@@ -146,9 +146,9 @@ function AdminPage() {
 
   return (
     <SiteLayout>
-      <h1 className="font-serif text-3xl">Moderation</h1>
+      <h1 className="font-serif text-3xl">Admin control room</h1>
       <Tabs value={tab} onValueChange={setTab} className="mt-6">
-        <TabsList>
+        <TabsList className="h-auto flex-wrap">
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="conversations">Conversations</TabsTrigger>
@@ -193,7 +193,7 @@ function AdminPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="users"><AdminUsers /></TabsContent>
+        <TabsContent value="users"><AdminUsers onConversation={id=>{setConversationId(id);setTab('conversations')}} /></TabsContent>
         <TabsContent value="conversations"><AdminConversations key={conversationId} initialId={conversationId}/></TabsContent>
 
         <TabsContent value="log" className="mt-5 space-y-2">
