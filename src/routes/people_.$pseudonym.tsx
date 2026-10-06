@@ -5,7 +5,7 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { PostCard, type PostRow } from '@/components/PostCard';
 import { Tabs,TabsContent,TabsList,TabsTrigger } from '@/components/ui/tabs';
 type PublicProfile={pseudonym:string;posts:PostRow[];comments:{id:string;post_id:string;body:string;created_at:string}[]};
-export const Route=createFileRoute('/people/$pseudonym')({
+export const Route=createFileRoute('/people_/$pseudonym')({
   head:({params})=>({meta:[{title:`${params.pseudonym} — Unsaid`},{name:'description',content:'Public stories and replies from an anonymous voice on Unsaid.'},{property:'og:title',content:`${params.pseudonym} — Unsaid`},{property:'og:description',content:'Public stories and replies from an anonymous voice on Unsaid.'},{property:'og:type',content:'profile'},{name:'twitter:card',content:'summary'}]}),component:PublicProfilePage,
 });
 function PublicProfilePage(){const {pseudonym}=Route.useParams();const {data,isLoading,error}=useQuery({queryKey:['public-profile',pseudonym],queryFn:async()=>{const {data,error}=await supabase.rpc('public_pseudonym_profile',{_pseudonym:pseudonym});if(error)throw error;return data as unknown as PublicProfile|null}});
