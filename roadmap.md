@@ -1,7 +1,9 @@
-- [ ] Redesign public surfaces, navigation, motion and loading states.
-- [ ] Add private My Space with safe owner actions and stats.
-- [ ] Add secure message requests, chats, blocks, moderation, and live updates.
-- [ ] Expand admin users/conversations/context/audit controls.
-- [ ] Update safety notices and verify desktop/mobile flows.
-- [ ] Add searchable pseudonym-only profiles and links from posts/comments; keep emails and private activity admin-only.
-- [ ] Verify the special admin area and enable the requesting owner's access with their confirmed account; retain disclosed, audited conversation review without read notifications.
+- [x] Redesign public surfaces, navigation, motion and loading states.
+- [x] Add private My Space with safe owner actions and stats.
+- [x] Add message requests, chats, blocks, moderation, and live updates.
+- [x] Expand admin users/conversations/context/audit controls.
+- [x] Update safety notices and verify desktop/mobile page layouts.
+- [x] Add searchable pseudonym-only profiles and links from posts/comments; keep emails and private activity admin-only.
+- [x] Verify the special admin area and enable the requesting owner's confirmed account; retain disclosed, audited conversation review without read notifications.
+- [ ] Verify a full two-person chat and admin conversation review: waiting for a second registered, verified account and a conversation.
+- [ ] Enable the second requested admin account: waiting for that account's signup and email verification.
