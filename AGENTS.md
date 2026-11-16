@@ -20,3 +20,4 @@
 - Public pseudonym discovery uses SECURITY INVOKER RPCs with safe projections and existing visibility RLS, never profile-table reads, to keep hidden content and identities private.
 
 - Public pseudonym pages use non-nested routing so the people-search screen cannot swallow profile content.
+- Cloudflare Pages shares the Lovable Cloud account backend; email confirmation returns to the official Unsaid host, while managed Google sign-in must stay on Lovable hosting because Pages does not serve the OAuth handoff.

@@ -10,6 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
+const UNSAID_OFFICIAL_ORIGIN = "https://unsaid-secrets-shared.lovable.app";
+
+function isCloudflareHosted(hostname: string) {
+  return hostname.endsWith(".pages.dev") || hostname.endsWith(".workers.dev");
+}
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -35,8 +41,14 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [adult, setAdult] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [cloudflareHosted, setCloudflareHosted] = useState(false);
 
   useEffect(() => {
+    const cloudflare = isCloudflareHosted(window.location.hostname);
+    setCloudflareHosted(cloudflare);
+    if (new URLSearchParams(window.location.search).get("mode") === "signup") {
+      setMode("signup");
+    }
     if (session) navigate({ to: "/", replace: true });
   }, [session, navigate]);
 
@@ -52,7 +64,11 @@ function AuthPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: {
+          emailRedirectTo: isCloudflareHosted(window.location.hostname)
+            ? UNSAID_OFFICIAL_ORIGIN
+            : window.location.origin,
+        },
       });
       setBusy(false);
       if (error) {
@@ -60,7 +76,11 @@ function AuthPage() {
         return;
       }
       if (!data.session) {
-        toast("Check your email to confirm your account.");
+        toast(
+          cloudflareHosted
+            ? "Check your email to confirm your account, then return here and sign in."
+            : "Check your email to confirm your account.",
+        );
         return;
       }
       navigate({ to: "/", replace: true });
@@ -78,6 +98,11 @@ function AuthPage() {
   async function google() {
     if (mode === "signup" && !adult) {
       toast("Please confirm you are 18 or older.");
+      return;
+    }
+    if (isCloudflareHosted(window.location.hostname)) {
+      const modeQuery = mode === "signup" ? "?mode=signup" : "";
+      window.location.assign(`${UNSAID_OFFICIAL_ORIGIN}/auth${modeQuery}`);
       return;
     }
     const result = await lovable.auth.signInWithOAuth("google", {
@@ -156,8 +181,15 @@ function AuthPage() {
             <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
           </div>
 
+          {cloudflareHosted && (
+            <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+              Google sign-in opens Unsaid’s official site. Cloudflare Pages can use the same
+              account and posts with email and password, but Google sessions do not transfer
+              between the two sites.
+            </p>
+          )}
           <Button variant="secondary" className="w-full" onClick={google}>
-            Continue with Google
+            {cloudflareHosted ? "Continue with Google on Unsaid" : "Continue with Google"}
           </Button>
 
           <button
