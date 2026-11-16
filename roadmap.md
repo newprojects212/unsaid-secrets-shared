@@ -7,3 +7,5 @@
 - [x] Verify the special admin area and enable the requesting owner's confirmed account; retain disclosed, audited conversation review without read notifications.
 - [ ] Verify a full two-person chat and admin conversation review: waiting for a second registered, verified account and a conversation.
 - [ ] Enable the second requested admin account: waiting for that account's signup and email verification.
+- [ ] Add and verify password recovery for the existing admin account.
+- [ ] Verify Cloudflare's supported Google handoff and measure page-load latency.
