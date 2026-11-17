@@ -21,3 +21,4 @@
 
 - Public pseudonym pages use non-nested routing so the people-search screen cannot swallow profile content.
 - Cloudflare Pages shares the Lovable Cloud account backend; email confirmation returns to the official Unsaid host, while managed Google sign-in must stay on Lovable hosting because Pages does not serve the OAuth handoff.
+- Keep password recovery on a public `/reset-password` route and send external-host recovery links to the official Unsaid origin, because only its callback is currently allowlisted.
